@@ -27,10 +27,30 @@ public class UserController {
         }
     }
 
-    @PostMapping("update")
+    @PutMapping("update")
     public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequest updateUserRequest){
         try{
             return ResponseEntity.ok(userService.updateUser(updateUserRequest));
+        }catch (Exception e){
+            logger.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("disable")
+    public ResponseEntity<?> disableUser(@RequestParam(name = "userName") String userName){
+        try{
+            return ResponseEntity.ok(userService.disableUser(userName));
+        }catch (Exception e){
+            logger.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("enable")
+    public ResponseEntity<?> enableUser(@RequestParam(name = "userName") String userName){
+        try{
+            return ResponseEntity.ok(userService.enableUser(userName));
         }catch (Exception e){
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

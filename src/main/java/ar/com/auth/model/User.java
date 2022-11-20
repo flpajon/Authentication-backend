@@ -14,17 +14,14 @@ import java.util.stream.Collectors;
 @Table(name = "user_table")
 @Getter
 @Setter
-@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
     @Id
-    @NonNull
     @Column(name = "user_name")
     private String userName;
     @Column(name = "user_password")
     private String userPassword;
-    @NonNull
     @ManyToMany
     @JoinTable(
             name = "user_roles",

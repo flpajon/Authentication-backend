@@ -1,6 +1,8 @@
 package ar.com.auth.services.implementations;
 
 import ar.com.auth.dtos.requests.UpdateUserRequest;
+import ar.com.auth.dtos.responses.DisableUserRespose;
+import ar.com.auth.dtos.responses.EnableUserRespose;
 import ar.com.auth.dtos.responses.FetchAllUsersResponse;
 import ar.com.auth.dtos.responses.UpdateUserResponse;
 import ar.com.auth.enums.Roles;
@@ -14,13 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 
-@Transactional
 @Service
 public class UserServiceImplement implements UserService {
 
@@ -42,10 +42,31 @@ public class UserServiceImplement implements UserService {
                             "Role",
                             MessageFormat.format("role {0} not found", role)
                     ))).toList();
-            User user = new User(updateUserRequest.getUserName(), userRoles);
-            return UpdateUserResponse.from(Optional.of(userRepository.save(user)));
+            User currentUser = userRepository.findUserByUserName(updateUserRequest.getUserName());
+            User updatedUser = new User(updateUserRequest.getUserName(), currentUser.getUserPassword(), userRoles, currentUser.getIsEnabled());
+            return UpdateUserResponse.from(Optional.of(userRepository.save(updatedUser)));
         }
         return UpdateUserResponse.from(Optional.empty());
+    }
+
+    @Override
+    public DisableUserRespose disableUser(String userName) {
+        if (userRepository.existsUserByUserName(userName)) {
+            User user = userRepository.findUserByUserName(userName);
+            user.setIsEnabled(false);
+            return DisableUserRespose.from(Optional.of(userRepository.save(user)));
+        }
+        return DisableUserRespose.from(Optional.empty());
+    }
+
+    @Override
+    public EnableUserRespose enableUser(String userName) {
+        if (userRepository.existsUserByUserName(userName)) {
+            User user = userRepository.findUserByUserName(userName);
+            user.setIsEnabled(true);
+            return EnableUserRespose.from(Optional.of(userRepository.save(user)));
+        }
+        return EnableUserRespose.from(Optional.empty());
     }
 
 
