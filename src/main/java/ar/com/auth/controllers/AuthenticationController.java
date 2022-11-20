@@ -3,7 +3,7 @@ package ar.com.auth.controllers;
 import ar.com.auth.dtos.requests.SigninRequest;
 import ar.com.auth.dtos.requests.SignupRequest;
 import ar.com.auth.model.User;
-import ar.com.auth.services.UserService;
+import ar.com.auth.services.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,12 @@ public class AuthenticationController {
     private final static Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Autowired
-    private UserService userService;
+    private AuthenticationService authenticationService;
 
     @PostMapping("signup")
     public ResponseEntity<?> signUp(@RequestBody SignupRequest signupRequest){
         try{
-            return ResponseEntity.ok(userService.signupUser(signupRequest));
+            return ResponseEntity.ok(authenticationService.signupUser(signupRequest));
         }catch (Exception e){
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -33,7 +33,7 @@ public class AuthenticationController {
     @PostMapping("signin")
     public ResponseEntity<?> signIn(@RequestBody SigninRequest signinRequest){
         try{
-            return ResponseEntity.ok(userService.signinUser(signinRequest));
+            return ResponseEntity.ok(authenticationService.signinUser(signinRequest));
         }catch (Exception e){
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -43,7 +43,7 @@ public class AuthenticationController {
     @GetMapping("refreshToken")
     public ResponseEntity<?> refreshToken(@AuthenticationPrincipal User user){
         try{
-            return ResponseEntity.ok(userService.refreshToken(user));
+            return ResponseEntity.ok(authenticationService.refreshToken(user));
         }catch (Exception e){
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

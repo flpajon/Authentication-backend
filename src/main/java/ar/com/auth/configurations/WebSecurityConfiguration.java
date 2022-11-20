@@ -37,13 +37,36 @@ public class WebSecurityConfiguration {
     @Autowired
     KeyUtils keyUtils;
 
+    private static final String[] ENDPOINTS_PUBLIC = new String[]{
+            "/api/authentication/signin",
+            "/api/authentication/signup"
+    };
+
+    private static final String[] ENDPOINTS_AUTHENTICATED = new String[]{
+            "/api/authentication/refreshToken"
+    };
+
+    private static final String[] ENDPOINTS_ADMIN_USER = new String[]{
+            "/api/user/*"
+    };
+
+    private static final String[] ENDPOINTS_NORMAL_USER = new String[]{
+
+    };
+
+    private static final String[] ENDPOINTS_GUESS_USER = new String[]{
+
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests((authorize) -> authorize
-                        .antMatchers("/api/authentication/*").permitAll()
-                        .antMatchers("/api/user/*").hasAuthority(Roles.ROLE_GUESS.name())
-                        .anyRequest().hasAuthority(Roles.ROLE_ADMIN.name())
+                        .antMatchers(ENDPOINTS_PUBLIC).permitAll()
+                        .antMatchers(ENDPOINTS_ADMIN_USER).hasAuthority(Roles.ROLE_ADMIN_USER.name())
+                        .antMatchers(ENDPOINTS_NORMAL_USER).hasAuthority(Roles.ROLE_NORMAL_USER.name())
+                        .antMatchers(ENDPOINTS_GUESS_USER).hasAuthority(Roles.ROLE_GUESS_USER.name())
+                        .antMatchers(ENDPOINTS_AUTHENTICATED).authenticated()
                 )
                 .csrf().disable()
                 .cors().disable()

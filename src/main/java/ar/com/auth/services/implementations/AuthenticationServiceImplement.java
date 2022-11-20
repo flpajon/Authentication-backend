@@ -1,8 +1,7 @@
-package ar.com.auth.services;
+package ar.com.auth.services.implementations;
 
 import ar.com.auth.dtos.requests.SigninRequest;
 import ar.com.auth.dtos.requests.SignupRequest;
-import ar.com.auth.dtos.responses.FetchAllUsersResponse;
 import ar.com.auth.dtos.responses.RefreshTokenResponse;
 import ar.com.auth.dtos.responses.SigninResponse;
 import ar.com.auth.dtos.responses.SignupResponse;
@@ -11,21 +10,19 @@ import ar.com.auth.model.Role;
 import ar.com.auth.model.User;
 import ar.com.auth.repositories.RoleRepository;
 import ar.com.auth.repositories.UserRepository;
+import ar.com.auth.services.AuthenticationService;
 import ar.com.auth.utils.TokenGenerator;
 import org.hibernate.FetchNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImplement implements UserService {
+public class AuthenticationServiceImplement implements AuthenticationService {
 
     @Autowired
     private UserRepository userRepository;
@@ -43,7 +40,7 @@ public class UserServiceImplement implements UserService {
                     .orElseThrow(() -> new FetchNotFoundException(
                             "Role",
                             MessageFormat.format("role {0} not found", role)
-                    ))).collect(Collectors.toList());
+                    ))).toList();
             User user = new User(signUpRequest.getUserName(), passwordEncoder.encode(signUpRequest.getUserPassword()), userRoles, true);
             return SignupResponse.from(Optional.of(userRepository.save(user)));
         }
@@ -64,22 +61,9 @@ public class UserServiceImplement implements UserService {
     }
 
     @Override
-    public FetchAllUsersResponse fetchAllUsers() {
-        return FetchAllUsersResponse.from(userRepository.findAll().stream().map(Optional::of).toList());
-    }
-
-    @Override
     public RefreshTokenResponse refreshToken(User user) {
         String accessToken = tokenGenerator.createAccessToken(user);
         String refreshToken = tokenGenerator.createRefreshToken(user);
         return RefreshTokenResponse.from(Optional.of(user),accessToken, refreshToken);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        return userRepository.findUserByUserNameAndIsEnabledTrue(userName)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        MessageFormat.format("username {0} not found", userName)
-                ));
     }
 }

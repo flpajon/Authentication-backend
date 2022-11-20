@@ -16,22 +16,21 @@ import java.util.stream.Collectors;
 @Setter
 @RequiredArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
     @Id
     @NonNull
     @Column(name = "user_name")
     private String userName;
-    @NonNull
     @Column(name = "user_password")
     private String userPassword;
     @NonNull
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> userRoles;
-    @NonNull
     @Column(name = "user_is_enabled")
     private Boolean isEnabled;
 

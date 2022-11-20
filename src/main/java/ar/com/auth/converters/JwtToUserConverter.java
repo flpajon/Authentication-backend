@@ -8,15 +8,16 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 
+@Transactional
 @Component
 public class JwtToUserConverter implements Converter<Jwt, UsernamePasswordAuthenticationToken> {
 
     @Autowired
     private UserRepository userRepository;
-
     @Override
     public UsernamePasswordAuthenticationToken convert(Jwt jwt) {
         User user = userRepository.findUserByUserNameAndIsEnabledTrue(jwt.getSubject()).orElseThrow(() -> new FetchNotFoundException(
