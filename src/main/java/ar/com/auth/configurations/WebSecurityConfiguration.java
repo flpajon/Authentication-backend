@@ -2,8 +2,6 @@ package ar.com.auth.configurations;
 
 import ar.com.auth.converters.JwtToUserConverter;
 import ar.com.auth.enums.Roles;
-import ar.com.auth.model.Role;
-import ar.com.auth.services.UserService;
 import ar.com.auth.utils.KeyUtils;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -17,11 +15,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -40,17 +36,14 @@ public class WebSecurityConfiguration {
     JwtToUserConverter jwtToUserConverter;
     @Autowired
     KeyUtils keyUtils;
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
-    UserService userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests((authorize) -> authorize
                         .antMatchers("/api/authentication/*").permitAll()
-                        .anyRequest().hasAuthority(Roles.ROLE_ADMIN.toString())
+                        .antMatchers("/api/user/*").hasAuthority(Roles.ROLE_GUESS.name())
+                        .anyRequest().hasAuthority(Roles.ROLE_ADMIN.name())
                 )
                 .csrf().disable()
                 .cors().disable()
@@ -108,12 +101,5 @@ public class WebSecurityConfiguration {
         return provider;
     }
 
-    @Bean
-    DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder);
-        provider.setUserDetailsService(userService);
-        return provider;
-    }
 }
 
