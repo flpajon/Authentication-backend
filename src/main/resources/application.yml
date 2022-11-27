@@ -15,6 +15,9 @@ spring:
       url: jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRESQL_DB}
       username: ${POSTGRESQL_USERNAME}
       password: ${POSTGRESQL_PASSWORD}
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
 logging:
   level:
     org.springframework.security: DEBUG
