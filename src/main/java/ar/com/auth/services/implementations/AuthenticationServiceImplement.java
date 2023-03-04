@@ -42,7 +42,9 @@ public class AuthenticationServiceImplement implements AuthenticationService {
                             MessageFormat.format("role {0} not found", role)
                     ))).toList();
             User user = new User(signUpRequest.getUserName(), passwordEncoder.encode(signUpRequest.getUserPassword()), userRoles, true);
-            return SignupResponse.from(Optional.of(userRepository.save(user)));
+            user = userRepository.save(user);
+            System.out.println(user);
+            return SignupResponse.from(Optional.of(user));
         }
         return SignupResponse.from(Optional.empty());
     }
