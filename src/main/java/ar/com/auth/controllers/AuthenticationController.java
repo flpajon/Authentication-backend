@@ -5,9 +5,11 @@ import ar.com.auth.dtos.requests.SignupRequest;
 import ar.com.auth.dtos.responses.RefreshTokenResponse;
 import ar.com.auth.dtos.responses.SigninResponse;
 import ar.com.auth.dtos.responses.SignupResponse;
+import ar.com.auth.enums.Status;
 import ar.com.auth.model.User;
 import ar.com.auth.services.AuthenticationService;
 import io.swagger.annotations.ApiOperation;
+import org.hibernate.FetchNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class AuthenticationController {
         try{
             return ResponseEntity.ok(authenticationService.signupUser(signupRequest));
         }catch (Exception e){
+            if(e instanceof  FetchNotFoundException){
+                return ResponseEntity.ok(SignupResponse.builder().user(null).status(Status.STATUS_NOT_ALLOWED).build());
+            }
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
         }

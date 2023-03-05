@@ -12,16 +12,23 @@ import ar.com.auth.repositories.RoleRepository;
 import ar.com.auth.repositories.UserRepository;
 import ar.com.auth.services.implementations.AuthenticationServiceImplement;
 import ar.com.auth.utils.TokenGenerator;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.hibernate.FetchNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.mockito.ArgumentMatchers.any;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -94,6 +101,16 @@ public class TestAuthenticationService {
         SignupRequest signupRequestMocked = SignupRequest.builder().userName(NEW_USER_NAME).userPassword(USER_PASSWORD).userRoles(List.of(USER_ROLE)).build();
         SignupResponse signupResponse = authenticationService.signupUser(signupRequestMocked);
         assertEquals(SignupResponse.from(Optional.of(newUserMocked)), signupResponse);
+    }
+
+    @Test
+    public void testSignupUserWhenRoleDoesntExist() {
+        String USER_ROLE_NON_EXISTENT = "ROLE_NON_EXISTENT";
+        SignupRequest signupRequestMocked = SignupRequest.builder().userName(NEW_USER_NAME).userPassword(USER_PASSWORD).userRoles(List.of(USER_ROLE, USER_ROLE_NON_EXISTENT)).build();
+        FetchNotFoundException thrown = assertThrows(FetchNotFoundException.class, () ->
+                authenticationService.signupUser(signupRequestMocked)
+        );
+        assertEquals(MessageFormat.format("Entity `Role` with identifier value `role {0} not found` does not exist", USER_ROLE_NON_EXISTENT), thrown.getMessage());
     }
 
     @Test

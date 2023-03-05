@@ -36,7 +36,7 @@ public class AuthenticationServiceImplement implements AuthenticationService {
     @Override
     public SignupResponse signupUser(SignupRequest signUpRequest) {
         if (!userRepository.existsUserByUserName(signUpRequest.getUserName())) {
-            List<Role> userRoles = signUpRequest.getUserRoles().stream().map(role -> roleRepository.findRoleByRoleName(Roles.valueOf(role))
+            List<Role> userRoles = signUpRequest.getUserRoles().stream().map(role -> roleRepository.findRoleByRoleName(Roles.parse(role))
                     .orElseThrow(() -> new FetchNotFoundException(
                             "Role",
                             MessageFormat.format("role {0} not found", role)
