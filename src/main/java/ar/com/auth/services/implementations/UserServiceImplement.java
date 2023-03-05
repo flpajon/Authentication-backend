@@ -37,7 +37,7 @@ public class UserServiceImplement implements UserService {
     @Override
     public UpdateUserResponse updateUser(UpdateUserRequest updateUserRequest) {
         if (userRepository.existsUserByUserName(updateUserRequest.getUserName())) {
-            List<Role> userRoles = updateUserRequest.getUserRoles().stream().map(role -> roleRepository.findRoleByRoleName(Roles.valueOf(role))
+            List<Role> userRoles = updateUserRequest.getUserRoles().stream().map(role -> roleRepository.findRoleByRoleName(Roles.parse(role))
                     .orElseThrow(() -> new FetchNotFoundException(
                             "Role",
                             MessageFormat.format("role {0} not found", role)

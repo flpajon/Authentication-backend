@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -76,17 +76,17 @@ public class TestAuthenticationService {
 
     @BeforeEach
     public void init() {
-        Mockito.when(userRepository.findUserByUserNameAndIsEnabledTrue(USER_NAME)).thenReturn(Optional.of(userMocked));
-        Mockito.when(userRepository.existsUserByUserName(USER_NAME)).thenReturn(true);
-        Mockito.when(userRepository.save(any(User.class))).thenReturn(newUserMocked);
+        when(userRepository.findUserByUserNameAndIsEnabledTrue(USER_NAME)).thenReturn(Optional.of(userMocked));
+        when(userRepository.existsUserByUserName(USER_NAME)).thenReturn(Boolean.TRUE);
+        when(userRepository.save(any(User.class))).thenReturn(newUserMocked);
 
-        Mockito.when(roleRepository.findRoleByRoleName(Roles.valueOf(USER_ROLE))).thenReturn(Optional.ofNullable(roleMocked));
+        when(roleRepository.findRoleByRoleName(Roles.valueOf(USER_ROLE))).thenReturn(Optional.ofNullable(roleMocked));
 
-        Mockito.when(passwordEncoder.matches(USER_PASSWORD, userMocked.getPassword())).thenReturn(true);
-        Mockito.when(passwordEncoder.encode(USER_PASSWORD)).thenReturn(USER_PASSWORD);
+        when(passwordEncoder.matches(USER_PASSWORD, userMocked.getPassword())).thenReturn(Boolean.TRUE);
+        when(passwordEncoder.encode(USER_PASSWORD)).thenReturn(USER_PASSWORD);
 
-        Mockito.when(tokenGenerator.createAccessToken(userMocked)).thenReturn(ACCESS_TOKEN);
-        Mockito.when(tokenGenerator.createRefreshToken(userMocked)).thenReturn(REFRESH_TOKEN);
+        when(tokenGenerator.createAccessToken(userMocked)).thenReturn(ACCESS_TOKEN);
+        when(tokenGenerator.createRefreshToken(userMocked)).thenReturn(REFRESH_TOKEN);
     }
 
     @Test
